@@ -1,0 +1,28 @@
+{
+  "name": "legacy-booking-coordinator",
+  "version": "1.0.0",
+  "description": "Code Kata: Legacy Flight Booking System Testing",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "clean": "rimraf dist"
+  },
+  "keywords": ["kata", "legacy", "testing", "approval"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@approvals/approvals": "^2.3.0",
+    "@types/jest": "^29.5.5",
+    "@types/node": "^20.6.0",
+    "jest": "^29.7.0",
+    "rimraf": "^5.0.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
