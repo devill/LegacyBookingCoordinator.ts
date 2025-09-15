@@ -13,7 +13,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@approvals/approvals": "^2.3.0",
+    "approvals": "^3.0.1",
     "@types/jest": "^29.5.5",
     "@types/node": "^20.6.0",
     "jest": "^29.7.0",
@@ -21,7 +21,9 @@
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "specrec-ts": "file:../../specrec/specrec-ts"
+  },
   "engines": {
     "node": ">=16.0.0"
   }
