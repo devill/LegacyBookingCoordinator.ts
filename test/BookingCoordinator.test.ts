@@ -1,5 +1,5 @@
+const approvals = require('approvals');
 import { setOne, clearAll } from 'specrec-ts';
-import { createVerify } from './approvals-helper';
 import {BookingCoordinatorImpl} from '../src/BookingCoordinatorImpl';
 import {BookingRepository} from '../src/BookingRepository';
 import {BookingRepositoryImpl} from '../src/BookingRepositoryImpl';
@@ -9,8 +9,6 @@ import {PartnerNotifier} from '../src/PartnerNotifier';
 import {PartnerNotifierImpl} from '../src/PartnerNotifierImpl';
 import {AuditLogger} from '../src/AuditLogger';
 import {AuditLoggerImpl} from '../src/AuditLoggerImpl';
-
-const verify = createVerify(__dirname);
 
 describe('BookingCoordinator', () => {
   let originalMathRandom: () => number;
@@ -55,7 +53,7 @@ describe('BookingCoordinator', () => {
 
     // Assert
     const output = result.toString();
-    verify(output);
+    approvals.verify(__dirname, 'BookingCoordinator.test.bookFlight should create booking successfully', output);
   });
 });
 
