@@ -1,4 +1,3 @@
-const approvals = require('approvals');
 import { setOne, clearAll } from 'specrec-ts';
 import {BookingCoordinatorImpl} from '../src/BookingCoordinatorImpl';
 import {BookingRepository} from '../src/BookingRepository';
@@ -52,8 +51,7 @@ describe('BookingCoordinator', () => {
     );
 
     // Assert
-    const output = result.toString();
-    approvals.verify(__dirname, 'BookingCoordinator.test.bookFlight should create booking successfully', output);
+    expect(result.toString()).toMatchSnapshot();
   });
 });
 
