@@ -77,7 +77,6 @@ We use Jest's built-in snapshot testing feature to verify test outputs. Jest wil
 Here is how you can use `factory.setOne()` with Jest snapshots:
 
 ```typescript
-
 test('bookFlight should create booking successfully', () => {
     // Setup test doubles
     factory.setOne(BookingRepositoryImpl, new BookingRepositoryStub());
