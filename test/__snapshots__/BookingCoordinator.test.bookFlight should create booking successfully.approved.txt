@@ -1,0 +1,10 @@
+New booking: APPLE3.14
+  👤 John Doe
+  ✈️ AA123
+  📅 2025-07-03 10:42
+  👥 2
+  🏢 AA
+  💰 $1161.37
+  🎯 meal,wheelchair
+  📝 2025-03-04 13:00
+  ✅ CONFIRMED_PREMIUM

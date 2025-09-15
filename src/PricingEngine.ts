@@ -1,3 +1,6 @@
+import { create } from 'specrec-ts';
+import { Random } from './Random';
+
 /**
  * Handles all pricing calculations for flight bookings
  * Updated 2019: Now supports multi-currency
@@ -9,6 +12,7 @@ export class PricingEngine {
   private readonly enableDynamicPricing: boolean; // Enable/disable dynamic pricing features
   private readonly currencyCode: string; // Currency code for this pricing instance
   private readonly historicalData: number; // Historical pricing data for calculations
+  private readonly _bookingDate: Date;
 
   /**
    * Initialize pricing engine with configuration
@@ -19,7 +23,8 @@ export class PricingEngine {
     airlineFees: Map<string, number>,
     applyRandomSurcharges: boolean,
     regionCode: string,
-    averageFlightCost: number
+    averageFlightCost: number,
+    bookingDate: Date
   ) {
     // Initialize core pricing parameters
     this.baseMultiplier = taxRate;
@@ -27,6 +32,7 @@ export class PricingEngine {
     this.enableDynamicPricing = applyRandomSurcharges;
     this.currencyCode = regionCode;
     this.historicalData = averageFlightCost;
+    this._bookingDate = bookingDate;
   }
 
   /**
@@ -58,7 +64,7 @@ export class PricingEngine {
    * Business rule: Early bookings get discount, last-minute bookings get surcharge
    */
   calculateTimeBasedMarkup(departureDate: Date): number {
-    const daysUntilFlight = Math.floor((departureDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    const daysUntilFlight = Math.floor((departureDate.getTime() - this._bookingDate.getTime()) / (1000 * 60 * 60 * 24));
 
     if (daysUntilFlight < 7) {
       return 150.0; // Last minute surcharge
@@ -97,7 +103,7 @@ export class PricingEngine {
 
     // Apply random promotional discounts to test the market
     // TODO: Replace this with proper discount service integration
-    const random = Math.floor(Math.random() * 5);
+    const random = create(Random)().next(0, 5);
     if (random === 1) {
       discountAmount = 25.0; // Premium discount
     } else if (random === 3) {

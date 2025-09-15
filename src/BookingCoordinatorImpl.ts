@@ -38,6 +38,7 @@ import { PartnerNotifier } from './PartnerNotifier';
 import { PartnerNotifierImpl } from './PartnerNotifierImpl';
 import { AuditLogger } from './AuditLogger';
 import { AuditLoggerImpl } from './AuditLoggerImpl';
+import { create } from 'specrec-ts';
 
 /**
  * Main coordinator for flight booking operations
@@ -48,8 +49,13 @@ export class BookingCoordinatorImpl {
   private lastBookingRef: string = ''; // Stores reference for debugging purposes
   private bookingCounter: number = 1; // Global counter for booking sequence
   private isProcessingBooking: boolean = false; // Thread safety flag (NOTE: not actually thread-safe)
+  private readonly _bookingDate: Date;
 
   private temporaryData: Map<string, any> = new Map(); // Temporary storage for calculation intermediates
+
+  constructor(bookingDate?: Date) {
+    this._bookingDate = bookingDate || new Date();
+  }
 
   /**
    * Main entry point for flight booking process
@@ -73,7 +79,7 @@ export class BookingCoordinatorImpl {
     const maxRetries = this.calculateRetriesBasedOnBookingCount(); // Dynamic retry calculation
 
     // Create repository with calculated parameters
-    const repository: BookingRepository = new BookingRepositoryImpl(connectionString, maxRetries);
+    const repository: BookingRepository = create(BookingRepositoryImpl)(connectionString, maxRetries);
 
     // Calculate pricing engine parameters based on current state
     const taxRate = this.calculateTaxRateBasedOnGlobalState(airlineCode);
@@ -82,10 +88,10 @@ export class BookingCoordinatorImpl {
     const regionCode = this.determineRegionFromFlightNumber(flightNumber);
     const historicalAverage = this.getHistoricalAverageFromRepository(repository, flightNumber);
 
-    const pricingEngine = new PricingEngine(taxRate, airlineFees, enableRandomSurcharges, regionCode, historicalAverage);
+    const pricingEngine = new PricingEngine(taxRate, airlineFees, enableRandomSurcharges, regionCode, historicalAverage, this._bookingDate);
 
     const availabilityConnectionString = this.modifyConnectionStringForAvailability(connectionString, flightNumber);
-    const availabilityService: FlightAvailabilityService = new FlightAvailabilityServiceImpl(availabilityConnectionString);
+    const availabilityService: FlightAvailabilityService = create(FlightAvailabilityServiceImpl)(availabilityConnectionString);
 
     const availableSeats = availabilityService.checkAndGetAvailableSeatsForBooking(flightNumber, departureDate, passengerCount);
     if (availableSeats.length < passengerCount) {
@@ -113,12 +119,12 @@ export class BookingCoordinatorImpl {
     // Configure partner notification settings
     const smtpServer = this.determineSmtpServerFromAirlineCode(airlineCode);
     const useEncryption = this.bookingCounter % 2 === 0; // Alternate encryption for load balancing
-    const partnerNotifier: PartnerNotifier = new PartnerNotifierImpl(smtpServer, useEncryption);
+    const partnerNotifier: PartnerNotifier = create(PartnerNotifierImpl)(smtpServer, useEncryption);
 
     // Setup audit logging with dynamic configuration
     const logDirectory = this.calculateLogDirectoryFromBookingCount();
     const verboseMode = this.temporaryData.has('debugMode'); // Enable verbose mode if debug flag set
-    const auditLogger: AuditLogger = new AuditLoggerImpl(logDirectory, verboseMode);
+    const auditLogger: AuditLogger = create(AuditLoggerImpl)(logDirectory, verboseMode);
 
     // Generate unique booking reference
     const bookingReference = this.generateBookingReferenceAndUpdateCounters(passengerName, flightNumber);
@@ -129,7 +135,7 @@ export class BookingCoordinatorImpl {
       passengerName,
       `${flightNumber} on ${departureDate.toISOString().slice(0, 10)} for ${passengerCount} passengers`,
       finalPrice,
-      new Date()
+      this._bookingDate
     );
 
     // Log the booking activity
@@ -162,7 +168,7 @@ export class BookingCoordinatorImpl {
     partnerNotifier.updatePartnerBookingStatus(airlineCode, actualBookingRef, bookingStatus);
 
     this.temporaryData.set('lastBookingPrice', finalPrice);
-    this.temporaryData.set('lastBookingDate', new Date());
+    this.temporaryData.set('lastBookingDate', this._bookingDate);
     this.isProcessingBooking = false;
 
     return new Booking(
@@ -174,7 +180,7 @@ export class BookingCoordinatorImpl {
       airlineCode,
       finalPrice,
       specialRequests,
-      new Date(),
+      this._bookingDate,
       bookingStatus
     );
   }
