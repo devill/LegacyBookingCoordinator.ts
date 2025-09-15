@@ -1,4 +1,4 @@
-import { verify } from '@approvals/approvals';
+import {verify} from "approvals";
 import { BookingCoordinatorImpl } from '../src/BookingCoordinatorImpl';
 
 describe('BookingCoordinatorImpl', () => {
