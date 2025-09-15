@@ -1,4 +1,3 @@
-import {verify} from "approvals";
 import { BookingCoordinatorImpl } from '../src/BookingCoordinatorImpl';
 
 describe('BookingCoordinatorImpl', () => {
@@ -23,6 +22,6 @@ describe('BookingCoordinatorImpl', () => {
     );
 
     // Assert
-    verify(result.toString());
+    expect(result.toString()).toMatchSnapshot();
   });
 });

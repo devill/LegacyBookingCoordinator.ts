@@ -70,15 +70,13 @@ factory.setAlways<AuditLogger>(new FakeAuditLogger());
 factory.setOne(PricingEngine, new FakePricingEngine());
 ```
 
-#### @approvals/approvals verify
+#### Jest Snapshot Testing
 
-When using @approvals/approvals we use Jest's `test()` function with approval testing. The approval library will compare the output against previously approved results stored in `.approved.txt` files.
+We use Jest's built-in snapshot testing feature to verify test outputs. Jest will compare the output against previously saved snapshots stored in `__snapshots__` directories.
 
-Here is how you can call `factory.setOne()` using @approvals/approvals:
+Here is how you can use `factory.setOne()` with Jest snapshots:
 
 ```typescript
-import { verify } from '@approvals/approvals';
-
 test('bookFlight should create booking successfully', () => {
     // Setup test doubles
     factory.setOne(BookingRepositoryImpl, new BookingRepositoryStub());
@@ -87,7 +85,7 @@ test('bookFlight should create booking successfully', () => {
     const coordinator = new BookingCoordinatorImpl();
     const result = coordinator.bookFlight(/* parameters */);
 
-    verify(result.toString());
+    expect(result.toString()).toMatchSnapshot();
 });
 ```
 
@@ -119,17 +117,17 @@ create(YourClass, ...constructorArgs);
 
 ## 📦 Prerequisites
 
-This kata requires the **@approvals/approvals** library (version 2.3.0 or later) which provides approval testing utilities for Node.js/TypeScript.
+This kata uses Jest's built-in snapshot testing feature, which is included with Jest (version 29.7.0 or later).
 
 Add to your `package.json`:
 ```json
 {
   "devDependencies": {
-    "@approvals/approvals": "^2.3.0",
     "@types/jest": "^29.5.5",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "specrec-ts": "file:../../specrec/specrec-ts"
   }
 }
 ```
