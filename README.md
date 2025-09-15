@@ -80,14 +80,14 @@ Here is how you can call `factory.setOne()` using @approvals/approvals:
 import { verify } from '@approvals/approvals';
 
 test('bookFlight should create booking successfully', () => {
-  // Setup test doubles
-  factory.setOne(BookingRepositoryImpl, new BookingRepositoryStub());
-  // ... setup other dependencies
+    // Setup test doubles
+    factory.setOne(BookingRepositoryImpl, new BookingRepositoryStub());
+    // ... setup other dependencies
 
-  const coordinator = new BookingCoordinatorImpl();
-  const result = coordinator.bookFlight(/* parameters */);
+    const coordinator = new BookingCoordinatorImpl();
+    const result = coordinator.bookFlight(/* parameters */);
 
-  verify(result.toString());
+    verify(result.toString());
 });
 ```
 
@@ -97,7 +97,7 @@ If you want to test constructor arguments make sure your test double implements 
 
 ```typescript
 interface ConstructorAware {
-  constructorCalledWith(...parameters: any[]): void;
+    constructorCalledWith(...parameters: any[]): void;
 }
 ```
 
@@ -142,131 +142,6 @@ npm install
 ⚠️ **Important**: You'll need to handle test isolation and cleanup manually in TypeScript, so consider using `beforeEach` and `afterEach` for ObjectFactory clearing.
 
 ⚠️ **Note on Precision**: TypeScript uses IEEE 754 double-precision floating point numbers, which may introduce precision issues with monetary calculations. The Java version uses BigDecimal for precise decimal arithmetic. Consider using a decimal library like `decimal.js` for production applications requiring exact decimal calculations.
-
-## 🥈 Test the interactions
-
-Now that you can inject dependencies, you have another problem: how do you implement test doubles and end up with an easy-to-read test? Setting up multiple mocks can become very time-consuming, but with a `CallLogger` it's easy.
-
-### 🛠️ Task
-
-Improve the test for `BookingCoordinatorImpl.bookFlight()` so that:
-* It checks the booking was saved as expected.
-* It checks a notification was sent to the correct place.
-* It checks price calculation is correct.
-* Verifies logging occurred.
-
-Use @approvals/approvals to create a comprehensive record of all method calls.
-
-### ☎️ Concept: CallLogger / Wrapper Pattern
-
-You can create wrapper test doubles that automatically log all method calls:
-
-```typescript
-import { verify } from '@approvals/approvals';
-
-test('bookFlight should create booking successfully', () => {
-  factory.setOne(EmailService, new LoggingEmailServiceWrapper(new EmailServiceStub(), '📧'));
-
-  // All method calls will be automatically logged
-  const coordinator = new BookingCoordinatorImpl();
-  const result = coordinator.bookFlight(/* parameters */);
-
-  verify(result.toString());
-});
-```
-
-## 🏅 Eliminate stub implementations
-
-Writing stub implementations for every dependency gets tedious fast. But did you notice that the approval files actually contain the return values? What if the return values were parsed from the latest approved call log? That is what a `Parrot` test double does for you.
-
-### 🎯 Task
-
-Replace your wrapped stubs with `Parrot` test doubles that automatically replay method interactions from approved files. This eliminates the need to write and maintain stub implementations entirely.
-
-### 🦜 Concept: Parrot Test Doubles
-
-You can create Parrot test doubles that replay method interactions from approved files:
-
-```typescript
-import { verify } from '@approvals/approvals';
-
-test('bookFlight should create booking successfully', () => {
-  factory.setOne(BookingRepository, new ParrotBookingRepository('💾'));
-
-  // The Parrot will automatically replay interactions from the approved file
-  const coordinator = new BookingCoordinatorImpl();
-  const result = coordinator.bookFlight(/* parameters */);
-
-  verify(result.toString());
-});
-```
-
-Normally the first run throws an exception about missing return values. Fill in return values in the `.received.txt` file, then approve it by copying to `.approved.txt`. Repeat until green.
-
-However, since you already have an approved call log with return values, the test should pass right away.
-
-### 🔗 Alternative: Fluent Factory Pattern
-
-You can create a fluent factory API to handle multiple substitutions:
-
-```typescript
-import { verify } from '@approvals/approvals';
-
-test('bookFlight should create booking successfully', () => {
-  factory
-    .substitute(BookingRepositoryImpl, new ParrotBookingRepository('💾'))
-    .substitute(FlightAvailabilityServiceImpl, new ParrotFlightService('✈️'))
-    .substitute(PartnerNotifierImpl, new ParrotPartnerNotifier('📣'));
-
-  // Same functionality as individual Parrots, but with fluent API
-  const coordinator = new BookingCoordinatorImpl();
-  const result = coordinator.bookFlight(/* parameters */);
-
-  verify(result.toString());
-});
-```
-
-This approach gives you the ability to keep track of multiple different objects of the same type, each with separate IDs.
-
-## 💎 Comprehensive scenario testing
-
-By now we have one test, but oh no... we need more. 😩 Don't worry, it won't take forever! Now that we read values from the approved call logs, we can have multiple approval files testing different scenarios.
-
-### 🎯 Task
-
-Transform your single test into a comprehensive test suite that covers multiple booking scenarios using Jest's `test.each()`. Instead of writing multiple similar tests, you'll define the system under test once and create approved files for each scenario.
-
-### 🏆 Concept: Parameterized Approval Tests
-
-Use Jest's parameterized tests with approval testing:
-
-```typescript
-import { verify } from '@approvals/approvals';
-
-const scenarios = [
-  'StandardBooking',
-  'NoAvailability',
-  'PremiumBooking'
-];
-
-test.each(scenarios)('bookFlight multiple scenarios: %s', (scenario) => {
-  // Configure test based on scenario
-  // Each scenario gets its own .approved.txt file
-
-  const coordinator = new BookingCoordinatorImpl();
-  const result = coordinator.bookFlight(/* parameters */);
-
-  verify(result.toString(), {
-    namer: {
-      name: `BookingCoordinator.test.bookFlightMultipleScenarios.${scenario}`
-    }
-  });
-});
-```
-
-Create files like `BookingCoordinator.test.bookFlightMultipleScenarios.StandardBooking.approved.txt` and `BookingCoordinator.test.bookFlightMultipleScenarios.NoAvailability.approved.txt`. Each file runs as its own test automatically.
-
-If you need to inject test values, you can create a test data object or use the scenario parameter to vary the test inputs for different scenarios.
 
 ## 🚀 Running the Tests
 
