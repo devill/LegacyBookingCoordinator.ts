@@ -21,7 +21,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "specrec-ts": "file:../../specrec/specrec-ts"
+    "specrec-ts": "^1.0.1"
   },
   "engines": {
     "node": ">=16.0.0"
