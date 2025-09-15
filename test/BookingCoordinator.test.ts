@@ -1,13 +1,14 @@
-import {verify} from "approvals";
-import { BookingCoordinatorImpl } from '../src/BookingCoordinatorImpl';
-import { BookingRepository } from '../src/BookingRepository';
-import { BookingRepositoryImpl } from '../src/BookingRepositoryImpl';
-import { FlightAvailabilityService } from '../src/FlightAvailabilityService';
-import { FlightAvailabilityServiceImpl } from '../src/FlightAvailabilityServiceImpl';
-import { PartnerNotifier } from '../src/PartnerNotifier';
-import { PartnerNotifierImpl } from '../src/PartnerNotifierImpl';
-import { AuditLogger } from '../src/AuditLogger';
-import { AuditLoggerImpl } from '../src/AuditLoggerImpl';
+const approvals = require('approvals');
+import { setOne, clearAll } from 'specrec-ts';
+import {BookingCoordinatorImpl} from '../src/BookingCoordinatorImpl';
+import {BookingRepository} from '../src/BookingRepository';
+import {BookingRepositoryImpl} from '../src/BookingRepositoryImpl';
+import {FlightAvailabilityService} from '../src/FlightAvailabilityService';
+import {FlightAvailabilityServiceImpl} from '../src/FlightAvailabilityServiceImpl';
+import {PartnerNotifier} from '../src/PartnerNotifier';
+import {PartnerNotifierImpl} from '../src/PartnerNotifierImpl';
+import {AuditLogger} from '../src/AuditLogger';
+import {AuditLoggerImpl} from '../src/AuditLoggerImpl';
 
 describe('BookingCoordinator', () => {
   let originalMathRandom: () => number;
@@ -16,7 +17,7 @@ describe('BookingCoordinator', () => {
     clearAll();
     originalMathRandom = Math.random;
     // Mock Math.random to return deterministic value for testing
-    Math.random = jest.fn(() => 0.6); // This will result in random = 3 after Math.floor(0.6 * 5)
+    Math.random = () => 0.6;
   });
 
   afterEach(() => {
@@ -50,23 +51,9 @@ describe('BookingCoordinator', () => {
       specialRequests
     );
 
-    const toStringResult = result.toString();
-    expect(toStringResult).toBeDefined();
-    expect(typeof toStringResult).toBe('string');
-
-    // Expected output based on C# version
-    const expectedOutput = `New booking: APPLE3.14
-  👤 John Doe
-  ✈️ AA123
-  📅 2025-07-03 10:42
-  👥 2
-  🏢 AA
-  💰 $1161.37
-  🎯 meal,wheelchair
-  📝 2025-03-04 13:00
-  ✅ CONFIRMED_PREMIUM`;
-
-    expect(toStringResult).toBe(expectedOutput);
+    // Assert
+    const output = result.toString();
+    approvals.verify(__dirname, 'BookingCoordinator.test.bookFlight should create booking successfully', output);
   });
 });
 
