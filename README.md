@@ -115,24 +115,9 @@ import { create } from './ObjectFactory';
 create(YourClass, ...constructorArgs);
 ```
 
-## 📦 Prerequisites
+## 📦 Setup
 
-This kata uses Jest's built-in snapshot testing feature, which is included with Jest (version 29.7.0 or later).
-
-Add to your `package.json`:
-```json
-{
-  "devDependencies": {
-    "@types/jest": "^29.5.5",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2",
-    "specrec-ts": "file:../../specrec/specrec-ts"
-  }
-}
-```
-
-Install with:
+Clone the repository and install dependencies:
 ```bash
 npm install
 ```
