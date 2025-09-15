@@ -1,4 +1,4 @@
-import { setOne, clearAll } from 'specrec-ts';
+import {verify} from "approvals";
 import { BookingCoordinatorImpl } from '../src/BookingCoordinatorImpl';
 import { BookingRepository } from '../src/BookingRepository';
 import { BookingRepositoryImpl } from '../src/BookingRepositoryImpl';
