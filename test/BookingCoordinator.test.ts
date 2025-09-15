@@ -1,4 +1,3 @@
-import { verify } from 'approvals';
 import { setOne, clearAll } from 'specrec-ts';
 import { BookingCoordinatorImpl } from '../src/BookingCoordinatorImpl';
 import { BookingRepository } from '../src/BookingRepository';
@@ -9,15 +8,20 @@ import { PartnerNotifier } from '../src/PartnerNotifier';
 import { PartnerNotifierImpl } from '../src/PartnerNotifierImpl';
 import { AuditLogger } from '../src/AuditLogger';
 import { AuditLoggerImpl } from '../src/AuditLoggerImpl';
-import { Random } from '../src/Random';
 
 describe('BookingCoordinator', () => {
+  let originalMathRandom: () => number;
+
   beforeEach(() => {
     clearAll();
+    originalMathRandom = Math.random;
+    // Mock Math.random to return deterministic value for testing
+    Math.random = jest.fn(() => 0.6); // This will result in random = 3 after Math.floor(0.6 * 5)
   });
 
   afterEach(() => {
     clearAll();
+    Math.random = originalMathRandom;
   });
 
   test('bookFlight should create booking successfully', () => {
@@ -35,7 +39,6 @@ describe('BookingCoordinator', () => {
     setOne(FlightAvailabilityServiceImpl, new FlightAvailabilityServiceStub());
     setOne(PartnerNotifierImpl, new PartnerNotifierStub());
     setOne(AuditLoggerImpl, new AuditLoggerStub());
-    setOne(Random, new RandomStub());
 
     const coordinator = new BookingCoordinatorImpl(bookingDate);
     const result = coordinator.bookFlight(
@@ -134,8 +137,3 @@ class AuditLoggerStub implements AuditLogger {
   }
 }
 
-class RandomStub extends Random {
-  next(min: number, max: number): number {
-    return 3; // Deterministic value for testing
-  }
-}

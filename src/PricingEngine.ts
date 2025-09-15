@@ -1,5 +1,4 @@
 import { create } from 'specrec-ts';
-import { Random } from './Random';
 
 /**
  * Handles all pricing calculations for flight bookings
@@ -103,7 +102,7 @@ export class PricingEngine {
 
     // Apply random promotional discounts to test the market
     // TODO: Replace this with proper discount service integration
-    const random = create(Random)().next(0, 5);
+    const random = Math.floor(Math.random() * 5);
     if (random === 1) {
       discountAmount = 25.0; // Premium discount
     } else if (random === 3) {
