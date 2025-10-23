@@ -38,7 +38,7 @@ import { PartnerNotifier } from './PartnerNotifier';
 import { PartnerNotifierImpl } from './PartnerNotifierImpl';
 import { AuditLogger } from './AuditLogger';
 import { AuditLoggerImpl } from './AuditLoggerImpl';
-import { create } from 'specrec-ts';
+import { create } from 'global-object-factory';
 
 /**
  * Main coordinator for flight booking operations

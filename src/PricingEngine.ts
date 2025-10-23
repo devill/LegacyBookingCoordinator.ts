@@ -1,5 +1,3 @@
-import { create } from 'specrec-ts';
-
 /**
  * Handles all pricing calculations for flight bookings
  * Updated 2019: Now supports multi-currency

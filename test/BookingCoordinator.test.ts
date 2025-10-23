@@ -1,4 +1,4 @@
-import { setOne, clearAll } from 'specrec-ts';
+import { setOne, clearAll } from 'global-object-factory';
 import {BookingCoordinatorImpl} from '../src/BookingCoordinatorImpl';
 import {BookingRepository} from '../src/BookingRepository';
 import {BookingRepositoryImpl} from '../src/BookingRepositoryImpl';
