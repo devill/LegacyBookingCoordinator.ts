@@ -21,7 +21,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "specrec-ts": "^1.0.1"
+    "global-object-factory": "^1.0.0"
   },
   "engines": {
     "node": ">=16.0.0"
